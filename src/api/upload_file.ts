@@ -4,7 +4,7 @@ export async function  upload_file(file:File, email:string) {
         return [false, "File size is too large. Maximum file size is 50MB, consider compressing the file."]
     }
     const filePath = `${email}/${file.name}`;
-    const { data, error } = await supabase
+    const {  error } = await supabase
     .storage
     .from('files/')
     .upload(filePath, file, {

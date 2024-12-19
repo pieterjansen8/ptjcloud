@@ -16,7 +16,7 @@ export function Navbar({ userEmail }: NavbarProps) {
 
   async function handleLogout() {
     try {
-      const req_out = await signOut(); 
+      await signOut(); 
       localStorage.clear();
       router.push('/');
     } catch (error) {

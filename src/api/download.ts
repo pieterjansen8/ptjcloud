@@ -15,7 +15,7 @@ export async function download(file_name:string, email:string){
 }
 export async function remove(file_name:string, email:string) {
     const filePath = `${email}/${file_name}`;
-    const { data, error } = await supabase
+    const { error } = await supabase
         .storage
         .from('files')
         .remove([filePath])
