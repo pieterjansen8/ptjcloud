@@ -57,7 +57,7 @@ export default function Dashboard() {
       const token = refresh_token || localStorage.getItem("refresh_token")!;
       if (refresh_token) localStorage.setItem("refresh_token", refresh_token);
 
-      const [error, , sessionData] = await getdata(token);
+      const [error, sessionData] = await getdata(token);
       if (error) {
         if (error.toString() === "Error: Invalid Refresh Token: Already Used") {
           localStorage.removeItem("refresh_token");
@@ -70,7 +70,11 @@ export default function Dashboard() {
         router.push("/");
         return;
       }
-      setSession(sessionData);
+      if (sessionData && 'user' in sessionData) {
+        setSession(sessionData);
+      } else {
+        setSession({ user: { email: "IMPOSTER" } });
+      }
       const fileData = await get_files(sessionData?.user?.email!);
       setFiles(fileData || []);
     }
