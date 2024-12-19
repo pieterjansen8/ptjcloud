@@ -77,8 +77,18 @@ export default function Dashboard() {
       } else {
         setSession({ user: { email: "IMPOSTER" } });
       }
-      const fileData = await get_files(sessionData?.user?.email!);
-      setFiles(fileData || []);
+      const fileData = await get_files((sessionData as Session)?.user?.email!);
+      const mappedFiles = fileData!.map((file: any) => ({
+        id: file.id,
+        name: file.name,
+        size: file.metadata.size,
+        lastModified: file.metadata.lastModified,
+        metadata: {
+          size: file.metadata.size,
+          lastModified: file.metadata.lastModified,
+        }
+      }));
+      setFiles(mappedFiles || []);
     }
 
     fetchData();
@@ -101,8 +111,18 @@ export default function Dashboard() {
         title: "Success!",
         description: "The file is uploaded to the cloud."
       });
-      const fileData = await get_files(session.user.email);
-      setFiles(fileData || []);
+      const fileData = await get_files(session.user?.email ?? '');
+      const mappedFiles = fileData!.map((file: any) => ({
+        id: file.id,
+        name: file.name,
+        size: file.metadata.size,
+        lastModified: file.metadata.lastModified,
+        metadata: {
+          size: file.metadata.size,
+          lastModified: file.metadata.lastModified,
+        }
+      }));
+      setFiles(mappedFiles || []);
     }
     else if(upload==false){
       toast({
@@ -142,8 +162,18 @@ export default function Dashboard() {
       });
       return;
     } else {
-      const fileData = await get_files(session.user.email);
-      setFiles(fileData || []);
+      const fileData = await get_files(session.user?.email ?? '');
+      const mappedFiles = fileData!.map((file: any) => ({
+        id: file.id,
+        name: file.name,
+        size: file.metadata.size,
+        lastModified: file.metadata.lastModified,
+        metadata: {
+          size: file.metadata.size,
+          lastModified: file.metadata.lastModified,
+        }
+      }));
+      setFiles(mappedFiles || []);
       toast({
         title: "Success!",
         description: "The file is removed from the cloud."
@@ -165,7 +195,9 @@ export default function Dashboard() {
         title: "Success!",
         description: "The URL is copied to the clipboard. (The link stays valid for 24 hours)"
       });
-      navigator.clipboard.writeText(mess);
+      if (typeof mess === 'string') {
+        navigator.clipboard.writeText(mess);
+      }
     }
   }
 
