@@ -71,7 +71,9 @@ export default function Dashboard() {
         return;
       }
       if (sessionData && 'user' in sessionData) {
-        setSession(sessionData);
+        setSession({
+          user: sessionData.user ? { email: sessionData.user.email } : undefined
+        });
       } else {
         setSession({ user: { email: "IMPOSTER" } });
       }
