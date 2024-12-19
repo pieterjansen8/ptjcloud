@@ -23,7 +23,9 @@ import {
 } from "@/components/ui/avatar"
 import { Navbar } from '@/components/ui/navbar';
 import { download, remove, copy_link }from "@/api/download"
-
+import { useToast } from "@/hooks/use-toast"
+import { Description } from "@radix-ui/react-toast";
+import { title } from "process";
 
 
 interface Session {
@@ -47,6 +49,7 @@ export default function Dashboard() {
   const searchParams = useSearchParams();
   const refresh_token = searchParams.get("token");
   const router = useRouter();
+  const { toast } = useToast()
   const [searchTerm, setSearchTerm] = useState('');
   const [session, setSession] = useState<Session>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -67,7 +70,10 @@ export default function Dashboard() {
         if (error.toString() === "Error: Invalid Refresh Token: Already Used") {
           localStorage.removeItem("refresh_token");
         }
-        alert(error);
+        toast({
+          title:"error",
+          description: error.toString()
+        });
         router.push("/");
         return;
       }
@@ -91,7 +97,7 @@ export default function Dashboard() {
 
     try {
       await upload_file(FILE, session.user.email);
-
+      toast({title:"Succesfull!", description:"the file is uploaded to the cloud."})
       const fileData = await get_files(session.user.email);
       setFiles(fileData || []);
     } catch (error) {
@@ -122,7 +128,7 @@ export default function Dashboard() {
     else{
       const fileData = await get_files(session.user.email);
       setFiles(fileData || []);
-      alert("file removed succesfully!")
+      toast({title:"succesfully!", description:"the file is removed from the cloud."})
     }
   }
   const copyhandler = async (filename:string, email:string) => { 
@@ -132,7 +138,10 @@ export default function Dashboard() {
        return
     }
     else{
-      alert("Succesfull! the url is coppied to the clipboard. (the link stays valid for 24-hours)")
+      toast({
+        title:"Succesfull!",
+        description: "the url is coppied to the clipboard. (the link stays valid for 24-hours"
+      })
       navigator.clipboard.writeText(mess)
     }
   }
@@ -160,7 +169,7 @@ export default function Dashboard() {
               />
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
             </div>
-            <div>
+            <div className="ml-4">
               <input
                 type="file"
                 ref={fileInputRef}
