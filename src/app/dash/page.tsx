@@ -1,4 +1,11 @@
 'use client';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu"
+import { Download, Link, Trash } from 'lucide-react'
 
 import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
@@ -15,6 +22,9 @@ import {
   AvatarFallback,
 } from "@/components/ui/avatar"
 import { Navbar } from '@/components/ui/navbar';
+import { download, remove, copy_link }from "@/api/download"
+
+
 
 interface Session {
   user?: {
@@ -93,6 +103,39 @@ export default function Dashboard() {
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
+  const downloadhandler = async (filename:string, email:string) => { 
+     const [download_request, mess]  = await download(filename, email)
+     if(download_request==false){
+        alert(mess)
+        return
+     }
+     else{
+        window.open(mess)
+     }
+  } 
+  const removehandler = async (filename:string, email:string) => { 
+    const [remove_request, mess]  = await remove(filename, email)
+    if(remove_request==false){
+       alert(mess)
+       return
+    }
+    else{
+      const fileData = await get_files(session.user.email);
+      setFiles(fileData || []);
+      alert("file removed succesfully!")
+    }
+  }
+  const copyhandler = async (filename:string, email:string) => { 
+    const [copyrequest, mess]  = await copy_link(filename, email)
+    if(copyrequest==false){
+       alert(mess)
+       return
+    }
+    else{
+      alert("Succesfull! the url is coppied to the clipboard. (the link stays valid for 24-hours)")
+      navigator.clipboard.writeText(mess)
+    }
+  }
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100">
       <Navbar userEmail={session?.user?.email} />
@@ -134,11 +177,11 @@ export default function Dashboard() {
             </div>
           </div>
           <Table>
-            <TableHeader>
+            <TableHeader >
               <TableRow>
                 <TableHead className="text-slate-300">Name</TableHead>
-                <TableHead className="text-slate-300">Size (in bytes)</TableHead>
-                <TableHead className="text-slate-300">Last Modified</TableHead>
+                <TableHead className="hidden sm:inline-block text-slate-300">Size (in bytes)</TableHead>
+                <TableHead className="hidden sm:inline-block text-slate-300">Last Modified</TableHead>
                 <TableHead className="text-slate-300 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -151,13 +194,32 @@ export default function Dashboard() {
                       {file.name}
                     </div>
                   </TableCell>
-                  <TableCell className="text-slate-300" onClick={() => {console.log(file)}}>{file.metadata.size}</TableCell>
-                  <TableCell className="text-slate-300">{file.metadata.lastModified}</TableCell>
+                  <TableCell className="hidden sm:inline-block text-slate-300">{file.metadata.size}</TableCell>
+                  <TableCell className="hidden sm:inline-block text-slate-300">{file.metadata.lastModified}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon">
-                      <MoreVertical className="h-4 w-4 text-slate-400" />
-                    </Button>
-                  </TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreVertical className="h-4 w-4 text-slate-400" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="bg-slate-700 text-slate-100 border-slate-600">
+                      <DropdownMenuItem onClick={() => {downloadhandler(file.name, session?.user?.email!)}} className="hover:bg-slate-600 focus:bg-slate-600 cursor-pointer" >
+                        <Download  className="mr-2 h-4 w-4" />
+                        <span>Download</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {removehandler(file.name, session?.user?.email!)}} className="hover:bg-slate-600 focus:bg-slate-600 cursor-pointer">
+                        <Trash className="mr-2 h-4 w-4" />
+                        <span>Remove</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {copyhandler(file.name, session?.user?.email!)}} className="hover:bg-slate-600 focus:bg-slate-600 cursor-pointer">
+                        <Link className="mr-2 h-4 w-4" />
+                        <span>Copy link</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+          </TableCell>
+
                 </TableRow>
               ))}
             </TableBody>

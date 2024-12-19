@@ -28,7 +28,7 @@ export function Navbar({ userEmail }: NavbarProps) {
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="lg:hidden">
-            <MenuIcon className="h-6 w-6" />
+            <MenuIcon className="h-6 w-6 text-slate-800" />
             <span className="sr-only">Toggle navigation menu</span>
           </Button>
         </SheetTrigger>
@@ -51,7 +51,7 @@ export function Navbar({ userEmail }: NavbarProps) {
               variant="ghost"
               asChild
             >
-              <Link href="https://github.com/yourusername/yourrepo" target="_blank" rel="noopener noreferrer">
+              <Link href="https://github.com/pieterjansen8/ptjcloud" target="_blank" rel="noopener noreferrer">
                 <Github className="h-5 w-5 mr-2" />
                 GitHub
               </Link>
@@ -75,7 +75,7 @@ export function Navbar({ userEmail }: NavbarProps) {
           className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-slate-700 px-4 py-2 text-sm font-medium transition-colors hover:bg-slate-600 hover:text-slate-100 focus:bg-slate-600 focus:text-slate-100 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-slate-600/50 data-[state=open]:bg-slate-600/50"
           asChild
         >
-          <Link href="https://github.com/yourusername/yourrepo" target="_blank" rel="noopener noreferrer">
+          <Link href="https://github.com/pieterjansen8/ptjcloud" target="_blank" rel="noopener noreferrer">
             <Github className="h-5 w-5 mr-2" />
             GitHub
           </Link>
