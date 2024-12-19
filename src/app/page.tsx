@@ -1,112 +1,135 @@
-'use client'
-
-import { useEffect, useState } from 'react'
+"use client"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import {login} from "@/api/sing-in"
-import { Switch } from '@/components/ui/switch'
-import { useRouter } from 'next/navigation'
+import { ArrowRight, Cloud, Lock, Zap } from 'lucide-react'
+import {useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { validate_refresh_key } from '@/api/refresh_key_validator'
-
-export default function AuthPage() {
-  const [email, setEmail] = useState('')
-  const [register, setRegister] = useState(false)
-  const [password, setPassword] = useState('')
-  const [message, setMessage] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-
-  const router = useRouter()
-
-   useEffect( () => { 
-    const setup = async () => { 
-      if(localStorage.getItem("refresh_token")!=undefined){
-        const val = await validate_refresh_key(localStorage.getItem("refresh_token")!)
-        if(val==true){
-          router.push("/dash")
-          return
-        }
-        else{
-          return
+export default function LandingPage() {
+  const router = useRouter()  
+    useEffect(() => { 
+      const setup = async () => { 
+        if(localStorage.getItem("refresh_token") !== undefined){
+          const val = await validate_refresh_key(localStorage.getItem("refresh_token")!)
+          if(val == true){
+            router.push("../dash")
+            return
+          }
+          else{
+            return
+          }
         }
       }
-    }
-    setup()
-   })
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setMessage('')
-    const [login_request, session_data] = await login(password, email, register)
-    if(login_request=="200"){
-      router.push("/dash?token="+session_data)
-      setMessage("successfully logged in!")
-    }
-    else if(login_request=="200-register"){
-       setMessage("successfully created a account!")
-    }
-    else{ 
-      setMessage(login_request!.toString())
-    }
-    setIsLoading(false)
-  }
-  //enable all functions 
-
-
+      setup()
+    }, [router])
   return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-900 bg-gradient-to-br from-slate-900 to-slate-800">
-      <Card className="w-[350px] bg-slate-800 border-slate-700">
-        <CardHeader>
-          <CardTitle className="text-slate-100">Cloud App Auth</CardTitle>
-          <CardDescription className="text-slate-400">
-            Enter your credentials to access your account.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-200">Email</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                required 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="bg-slate-700 border-slate-600 text-slate-100 focus:ring-slate-400"
-                placeholder="you@example.com"
-              />
+    <div className="flex  flex-col min-h-screen">
+      <center>
+      <header className="px-4 lg:px-6 h-14 flex items-center">
+        <a className="flex items-center justify-center" href="#">
+          <CloudIcon className="h-6 w-6 text-blue-600" />
+          <span className="sr-only">Acme Inc</span>
+        </a>
+
+      </header>
+      <main className="flex-1">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
+                  Welcome to Your Cloud Storage Solution
+                </h1>
+                <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+                  Securely store, manage, and share your files from anywhere. Fast, reliable, and built for the modern web.
+                </p>
+              </div>
+              <div className="space-x-4">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => { router.push("/signin")} }>
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button variant="outline" onClick={() => {window.open("https://github.com/pieterjansen8/ptjcloud")}}>Learn More</Button>
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-slate-200">Password</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="bg-slate-700 border-slate-600 text-slate-100 focus:ring-slate-400"
-                placeholder="••••••••"
-              />
+          </div>
+        </section>
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800">
+          <div className="container px-4 md:px-6">
+            <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="flex flex-col items-center space-y-4 text-center">
+                <div className=" bg-blue-600 hover:bg-blue-700 hover:p-5 cursor-pointer transition-all duration-500 bg-primary  rounded-full p-3 ">
+                  <Cloud className="h-6 w-6 text-white" />
+                </div>
+                <h2 className="text-xl font-bold">Cloud Storage</h2>
+                <p className="text-gray-500 dark:text-gray-400">Store your files securely in the cloud and access them from anywhere.</p>
+              </div>
+              <div className="flex flex-col items-center space-y-4 text-center">
+                <div className=" bg-blue-600 hover:bg-blue-700 hover:p-5 cursor-pointer transition-all duration-500 bg-primary rounded-full p-3">
+                  <Zap className="h-6 w-6 text-white" />
+                </div>
+                <h2 className="text-xl font-bold">Fast Uploads</h2>
+                <p className="text-gray-500 dark:text-gray-400">Experience lightning-fast file uploads with our optimized infrastructure.</p>
+              </div>
+              <div className="flex flex-col items-center space-y-4 text-center">
+                <div className="bg-primary  bg-blue-600 hover:bg-blue-700 cursor-pointer hover:p-5 transition-all duration-500 rounded-full p-3">
+                  <Lock className="h-6 w-6 text-white" />
+                </div>
+                <h2 className="text-xl font-bold">Secure Sharing</h2>
+                <p className="text-gray-500 dark:text-gray-400">Share your files securely with customizable access controls.</p>
+              </div>
             </div>
-            <div className='flex items-center space-x-2'>
-               <Switch id="register"  onCheckedChange={() => {setRegister(!register)}}   className='data-[state=checked]:bg-slate-600 data-[state=unchecked]:bg-slate-700'/>
-               <Label htmlFor="register"  className='text-white font-medium'>Register</Label>
-           </div>
-            <Button type="submit" className="w-full bg-slate-600 hover:bg-slate-500" disabled={isLoading}>
-              {isLoading ? 'Processing...' : 'Sign In'}
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter>
-          {message && (
-            <p className={`text-sm ${message.includes('successfully') ? 'text-green-400' : 'text-red-400'}`} role="status">
-              {message}
-            </p>
-          )}
-        </CardFooter>
-      </Card>
+          </div>
+        </section>
+        <section className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
+                  Ready to get started?
+                </h2>
+                <p className="mx-auto max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  Join thousands of satisfied users and start managing your files with ease today.
+                </p>
+              </div>
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => { router.push("/signin")} }>
+                Sign Up Now
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </section>
+      </main>
+      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
+        <p className="text-xs text-gray-500 dark:text-gray-400">© 2024 Acme Inc. All rights reserved.</p>
+        <nav className="sm:ml-auto flex gap-4 sm:gap-6">
+          <a className="text-xs hover:underline underline-offset-4" href="#">
+            Terms of Service
+          </a>
+          <a className="text-xs hover:underline underline-offset-4" href="#">
+            Privacy
+          </a>
+        </nav>
+      </footer>
+      </center>
     </div>
   )
 }
 
+function CloudIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+    </svg>
+  )
+}

@@ -1,32 +1,25 @@
 'use client';
+
+import { useState, useRef, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu"
-import { Download, Link, Trash } from 'lucide-react'
-
-import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { FileIcon, Files, MoreVertical, Search, Upload } from 'lucide-react';
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { useToast } from "@/hooks/use-toast"
+import { Navbar } from '@/components/ui/navbar';
+import { Download, Link, Trash, FileIcon, MoreVertical, Search, Upload } from 'lucide-react';
 import { getdata } from '@/api/get_session';
-import { useSearchParams, useRouter } from 'next/navigation';
 import { upload_file } from "@/api/upload_file";
 import { get_files } from "@/api/get_all_files";
-import {
-  Avatar,
-  AvatarFallback,
-} from "@/components/ui/avatar"
-import { Navbar } from '@/components/ui/navbar';
-import { download, remove, copy_link }from "@/api/download"
-import { useToast } from "@/hooks/use-toast"
-import { Description } from "@radix-ui/react-toast";
-import { title } from "process";
-
+import { download, remove, copy_link } from "@/api/download"
 
 interface Session {
   user?: {
@@ -71,8 +64,9 @@ export default function Dashboard() {
           localStorage.removeItem("refresh_token");
         }
         toast({
-          title:"error",
-          description: error.toString()
+          title: "Error",
+          description: error.toString(),
+          variant: "destructive"
         });
         router.push("/");
         return;
@@ -85,7 +79,7 @@ export default function Dashboard() {
     fetchData();
 
     window.history.replaceState(null, '', "/dash");
-  }, [refresh_token, router]);
+  }, [refresh_token, router, toast]);
 
   const filteredFiles = files.filter((file) =>
     file.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -97,79 +91,102 @@ export default function Dashboard() {
 
     try {
       await upload_file(FILE, session.user.email);
-      toast({title:"Succesfull!", description:"the file is uploaded to the cloud."})
+      toast({
+        title: "Success!",
+        description: "The file is uploaded to the cloud."
+      });
       const fileData = await get_files(session.user.email);
       setFiles(fileData || []);
     } catch (error) {
       console.error("File upload failed:", error);
-      alert('Failed to upload the file.');
+      toast({
+        title: "Error",
+        description: 'Failed to upload the file.',
+        variant: "destructive"
+      });
     }
   };
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
-  const downloadhandler = async (filename:string, email:string) => { 
-     const [download_request, mess]  = await download(filename, email)
-     if(download_request==false){
-        alert(mess)
-        return
-     }
-     else{
-        window.open(mess)
-     }
-  } 
-  const removehandler = async (filename:string, email:string) => { 
-    const [remove_request, mess]  = await remove(filename, email)
-    if(remove_request==false){
-       alert(mess)
-       return
+
+  const downloadHandler = async (filename: string, email: string) => { 
+    const [download_request, mess] = await download(filename, email);
+    if (download_request === false) {
+      toast({
+        title: "Error",
+        description: mess.toString(),
+        variant: "destructive"
+      });
+      return;
+    } else {
+      window.open(mess.toString());
     }
-    else{
+  } 
+
+  const removeHandler = async (filename: string, email: string) => { 
+    const [remove_request, mess] = await remove(filename, email);
+    if (remove_request === false) {
+      toast({
+        title: "Error",
+        description: mess.toString(),
+        variant: "destructive"
+      });
+      return;
+    } else {
       const fileData = await get_files(session.user.email);
       setFiles(fileData || []);
-      toast({title:"succesfully!", description:"the file is removed from the cloud."})
-    }
-  }
-  const copyhandler = async (filename:string, email:string) => { 
-    const [copyrequest, mess]  = await copy_link(filename, email)
-    if(copyrequest==false){
-       alert(mess)
-       return
-    }
-    else{
       toast({
-        title:"Succesfull!",
-        description: "the url is coppied to the clipboard. (the link stays valid for 24-hours"
-      })
-      navigator.clipboard.writeText(mess)
+        title: "Success!",
+        description: "The file is removed from the cloud."
+      });
     }
   }
+
+  const copyHandler = async (filename: string, email: string) => { 
+    const [copyRequest, mess] = await copy_link(filename, email);
+    if (copyRequest === false) {
+      toast({
+        title: "Error",
+        description: mess.toString(),
+        variant: "destructive"
+      });
+      return;
+    } else {
+      toast({
+        title: "Success!",
+        description: "The URL is copied to the clipboard. (The link stays valid for 24 hours)"
+      });
+      navigator.clipboard.writeText(mess);
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100">
+    <div className="min-h-screen bg-gray-100 text-gray-900">
       <Navbar userEmail={session?.user?.email} />
-      <Card className=" mt-5 bg-slate-800 border-slate-700">
+      <Card className="mt-5 bg-white border-gray-200 shadow-md">
         <CardHeader>
-          <CardTitle  className="text-white">
+          <CardTitle className="text-gray-800">
             {session?.user?.email ?? 'IMPOSTER'} Files
           </CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardDescription className="text-gray-600">
             Manage and view your cloud files
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex justify-between items-center mb-6">
-            <div className="relative w-64">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
+            <div className="relative w-full sm:w-64">
               <Input
                 type="text"
                 placeholder="Search files..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-slate-700 border-slate-600 text-slate-100 focus:ring-slate-500"
+                className="pl-10 bg-white border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500"
               />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             </div>
-            <div className="ml-4">
+            <div>
               <input
                 type="file"
                 ref={fileInputRef}
@@ -177,7 +194,7 @@ export default function Dashboard() {
                 className="hidden"
               />
               <Button
-                className="bg-slate-700 hover:bg-slate-600 text-slate-100"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={triggerFileInput}
               >
                 <Upload className="h-4 w-4 mr-2" />
@@ -186,49 +203,48 @@ export default function Dashboard() {
             </div>
           </div>
           <Table>
-            <TableHeader >
+            <TableHeader>
               <TableRow>
-                <TableHead className="text-slate-300">Name</TableHead>
-                <TableHead className="hidden sm:inline-block text-slate-300">Size (in bytes)</TableHead>
-                <TableHead className="hidden sm:inline-block text-slate-300">Last Modified</TableHead>
-                <TableHead className="text-slate-300 text-right">Actions</TableHead>
+                <TableHead className="text-gray-700">Name</TableHead>
+                <TableHead className="hidden sm:table-cell text-gray-700">Size (in bytes)</TableHead>
+                <TableHead className="hidden sm:table-cell text-gray-700">Last Modified</TableHead>
+                <TableHead className="text-gray-700 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredFiles.map((file) => (
                 <TableRow key={file.id}>
-                  <TableCell className="font-medium text-slate-200">
+                  <TableCell className="font-medium text-gray-900">
                     <div className="flex items-center">
-                      <FileIcon className="h-5 w-5 text-slate-400 mr-2" />
+                      <FileIcon className="h-5 w-5 text-gray-400 mr-2" />
                       {file.name}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden sm:inline-block text-slate-300">{file.metadata.size}</TableCell>
-                  <TableCell className="hidden sm:inline-block text-slate-300">{file.metadata.lastModified}</TableCell>
+                  <TableCell className="hidden sm:table-cell text-gray-700">{file.metadata.size}</TableCell>
+                  <TableCell className="hidden sm:table-cell text-gray-700">{file.metadata.lastModified}</TableCell>
                   <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreVertical className="h-4 w-4 text-slate-400" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="bg-slate-700 text-slate-100 border-slate-600">
-                      <DropdownMenuItem onClick={() => {downloadhandler(file.name, session?.user?.email!)}} className="hover:bg-slate-600 focus:bg-slate-600 cursor-pointer" >
-                        <Download  className="mr-2 h-4 w-4" />
-                        <span>Download</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {removehandler(file.name, session?.user?.email!)}} className="hover:bg-slate-600 focus:bg-slate-600 cursor-pointer">
-                        <Trash className="mr-2 h-4 w-4" />
-                        <span>Remove</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {copyhandler(file.name, session?.user?.email!)}} className="hover:bg-slate-600 focus:bg-slate-600 cursor-pointer">
-                        <Link className="mr-2 h-4 w-4" />
-                        <span>Copy link</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-          </TableCell>
-
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreVertical className="h-4 w-4 text-gray-600" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-white text-gray-900 border-gray-200">
+                        <DropdownMenuItem onClick={() => downloadHandler(file.name, session?.user?.email!)} className="hover:bg-gray-100 focus:bg-gray-100 cursor-pointer">
+                          <Download className="mr-2 h-4 w-4" />
+                          <span>Download</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => removeHandler(file.name, session?.user?.email!)} className="hover:bg-gray-100 focus:bg-gray-100 cursor-pointer">
+                          <Trash className="mr-2 h-4 w-4" />
+                          <span>Remove</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => copyHandler(file.name, session?.user?.email!)} className="hover:bg-gray-100 focus:bg-gray-100 cursor-pointer">
+                          <Link className="mr-2 h-4 w-4" />
+                          <span>Copy link</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
