@@ -86,25 +86,27 @@ export default function Dashboard() {
   );
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const btn = document.getElementById('upload_btn');
+    btn!.style.cursor = 'not-allowed';
     const FILE = event.target.files?.[0];
     if (!FILE || !session?.user?.email) return;
-
-    try {
-      await upload_file(FILE, session.user.email);
+    const [upload, mess] = await upload_file(FILE, session.user.email);
+    if(upload==true){
       toast({
         title: "Success!",
         description: "The file is uploaded to the cloud."
       });
       const fileData = await get_files(session.user.email);
       setFiles(fileData || []);
-    } catch (error) {
-      console.error("File upload failed:", error);
+    }
+    else if(upload==false){
       toast({
         title: "Error",
-        description: 'Failed to upload the file.',
+        description: mess.toString(),
         variant: "destructive"
       });
     }
+    btn!.style.cursor = 'pointer';
   };
 
   const triggerFileInput = () => {
@@ -193,7 +195,7 @@ export default function Dashboard() {
                 onChange={handleFileUpload}
                 className="hidden"
               />
-              <Button
+              <Button id='upload_btn'
                 className="bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={triggerFileInput}
               >
@@ -254,4 +256,20 @@ export default function Dashboard() {
     </div>
   );
 }
-
+const LoadingSpinner = (props: React.SVGProps<SVGSVGElement>) => {
+ 
+  <svg 
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
+}
