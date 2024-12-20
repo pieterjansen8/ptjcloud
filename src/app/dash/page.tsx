@@ -203,7 +203,8 @@ function DashboardContent() {
   }
 
   const copyHandler = async (filename: string, email: string) => { 
-    const [copyRequest, mess] = await copy_link(filename, email);
+    if (navigator.clipboard) {
+        const [copyRequest, mess] = await copy_link(filename, email);
     if (copyRequest === false) {
       toast({
         title: "Error",
@@ -217,9 +218,30 @@ function DashboardContent() {
         description: "The URL is copied to the clipboard. (The link stays valid for 24 hours)"
       });
       if (typeof mess === 'string') {
-        navigator.clipboard.writeText(mess);
+        navigator.permissions.query({ name: "clipboard-write" as PermissionName }).then((result) => {
+          if (result.state === "granted" || result.state === "prompt") {
+            navigator.clipboard.writeText(mess);
+          }
+          else{
+            toast({
+              title: "Error",
+              description: "Failed to copy the link to the clipboard. (Permission to clipboard denied.)",
+              variant: "destructive"
+            });
+          }
+        });
+        
       }
     }
+
+   }
+   else{
+    toast({
+      title: "Error",
+      description: "Failed to copy the link to the clipboard. (Clipboard API not supported.)",
+      variant: "destructive"
+    });
+   }
   }
 
   return (
@@ -228,7 +250,7 @@ function DashboardContent() {
       <Card className="mt-5 bg-white border-gray-200 shadow-md">
         <CardHeader>
           <CardTitle className="text-gray-800">
-            {session?.user?.email ?? 'IMPOSTER'} Files
+            {session?.user?.email ?? 'Loading page...'} Files
           </CardTitle>
           <CardDescription className="text-gray-600">
             Manage and view your cloud files
