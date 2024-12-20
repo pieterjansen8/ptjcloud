@@ -214,14 +214,26 @@ function DashboardContent() {
       return;
     } else {
       if (typeof mess === 'string') {
-        navigator.permissions.query({ name: "clipboard-write" as PermissionName }).then((result) => {
+        navigator.permissions.query({ name: "clipboard-write" as PermissionName }).then( async (result) => {
           if (result.state === "granted" || result.state === "prompt") {
             navigator.clipboard.writeText(mess);
-            toast({
-              title: "Success!",
-              description: "The URL is copied to the clipboard. (The link stays valid for 24 hours)"
-            });
+            const last_writed = await navigator.clipboard.readText();
+            console.log(last_writed)
+            if(last_writed === mess){
+              toast({
+                title: "Success!",
+                description: "The URL is copied to the clipboard. (The link stays valid for 24 hours)"
+              });
+            }
+            else{
+              toast({
+                title: "Error",
+                description: "Failed to copy the link to the clipboard.",
+                variant: "destructive"
+              });
+            }
           }
+          
           else{
             toast({
               title: "Error",
