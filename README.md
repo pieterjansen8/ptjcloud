@@ -32,3 +32,4 @@ npm run dev
 
 pnpm run dev
 ```
+### or better go to https://ptjcloud.vercel.app for the latest version
