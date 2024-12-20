@@ -197,13 +197,13 @@ function DashboardContent() {
       setFiles(mappedFiles || []);
       toast({
         title: "Success!",
-        description: "The file is removed from the cloud."
+        description: "The file is removed from the cloud.",
       });
     }
   }
 
   const copyHandler = async (filename: string, email: string) => { 
-    if (navigator.clipboard) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
         const [copyRequest, mess] = await copy_link(filename, email);
     if (copyRequest === false) {
       toast({
@@ -213,14 +213,14 @@ function DashboardContent() {
       });
       return;
     } else {
-      toast({
-        title: "Success!",
-        description: "The URL is copied to the clipboard. (The link stays valid for 24 hours)"
-      });
       if (typeof mess === 'string') {
         navigator.permissions.query({ name: "clipboard-write" as PermissionName }).then((result) => {
           if (result.state === "granted" || result.state === "prompt") {
             navigator.clipboard.writeText(mess);
+            toast({
+              title: "Success!",
+              description: "The URL is copied to the clipboard. (The link stays valid for 24 hours)"
+            });
           }
           else{
             toast({
@@ -238,7 +238,7 @@ function DashboardContent() {
    else{
     toast({
       title: "Error",
-      description: "Failed to copy the link to the clipboard. (Clipboard API not supported.)",
+      description: "Failed to copy the link to the clipboard. (Clipboard API not supported on this browser, consider using chrome.)",
       variant: "destructive"
     });
    }
