@@ -156,7 +156,20 @@ function DashboardContent() {
       });
       return;
     } else {
-      window.open(mess.toString());
+      if (mess instanceof Blob) {
+        const url = URL.createObjectURL(mess);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        link.click(); 
+        link.remove();
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to download the file.",
+          variant: "destructive"
+        });
+      }
     }
   } 
 

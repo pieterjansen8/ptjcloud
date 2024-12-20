@@ -5,13 +5,11 @@ export async function download(file_name:string, email:string){
     const { data, error } = await supabase
         .storage
         .from('files')
-        .createSignedUrl(filePath, 60, {
-           download:true,    
-        })
+        .download(filePath)
     if(error!=undefined){
         return [false, error]
     }
-    return [true,data.signedUrl]
+    return [true, data]
 }
 export async function remove(file_name:string, email:string) {
     const filePath = `${email}/${file_name}`;
