@@ -27,7 +27,7 @@ export default function LandingPage() {
       <header className="px-4 lg:px-6 h-14 flex items-center">
         <a className="flex items-center justify-center" href="#">
           <CloudIcon className="h-6 w-6 text-blue-600" />
-          <span className="sr-only">Acme Inc</span>
+          <span className="sr-only">PTJ Inc</span>
         </a>
 
       </header>
@@ -100,7 +100,7 @@ export default function LandingPage() {
         </section>
       </main>
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-gray-500 dark:text-gray-400">© 2024 Acme Inc. All rights reserved.</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">© 2024 PTJ Inc. All rights reserved.</p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <a className="text-xs hover:underline underline-offset-4" href="#">
             Terms of Service

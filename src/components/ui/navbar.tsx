@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { MenuIcon, MountainIcon, LogOut, Github } from 'lucide-react';
+import { MenuIcon,  LogOut, Github } from 'lucide-react';
 import { signOut } from '@/api/singout'; // Assuming you have a signOut function in your auth file
 
 interface NavbarProps {
@@ -35,7 +35,7 @@ export function Navbar({ userEmail }: NavbarProps) {
         </SheetTrigger>
         <SheetContent side="left" className="bg-white text-gray-800">
           <Link href="#" className="mr-6 flex items-center" prefetch={false}>
-            <MountainIcon className="h-6 w-6 text-blue-600" />
+            <CloudIcon className="h-6 w-6 text-blue-600" />
             <span className="ml-2 text-lg font-semibold">Ptj Inc</span>
           </Link>
           <nav className="grid gap-2 py-6">
@@ -61,7 +61,7 @@ export function Navbar({ userEmail }: NavbarProps) {
         </SheetContent>
       </Sheet>
       <Link href="#" className="mr-6 hidden lg:flex items-center" prefetch={false}>
-        <MountainIcon className="h-6 w-6 text-blue-600" />
+        <CloudIcon className="h-6 w-6 text-blue-600" />
         <span className="ml-2 text-lg font-semibold text-gray-800">Ptj Inc</span>
       </Link>
       <nav className="ml-auto hidden lg:flex items-center gap-6">
@@ -91,3 +91,21 @@ export function Navbar({ userEmail }: NavbarProps) {
   );
 }
 
+function CloudIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+    </svg>
+  )
+}

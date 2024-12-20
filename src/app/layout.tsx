@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ptj-cloud-v2-beta",
-  description: "CREATED_BY_PIETER",
+  title: "ptj-cloud",
+  description: "A fast, modern, and lightweight cloud platform.",
 };
 
 export default function RootLayout({
