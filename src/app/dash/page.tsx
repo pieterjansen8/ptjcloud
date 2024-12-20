@@ -19,7 +19,7 @@ import { getdata } from '@/api/get_session';
 import { upload_file } from "@/api/upload_file";
 import { get_files } from "@/api/get_all_files";
 import { download, remove, copy_link } from "@/api/download"
-
+import { Progress } from '@/components/ui/progress';
 interface Session {
   user?: {
     email?: string;
@@ -54,6 +54,7 @@ function DashboardContent() {
   const [session, setSession] = useState<Session>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<FileData[]>([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   useEffect(() => {
     async function fetchData() {
@@ -113,8 +114,12 @@ function DashboardContent() {
     btn!.style.cursor = 'not-allowed';
     const FILE = event.target.files?.[0];
     if (!FILE || !session?.user?.email) return;
+
+    setUploadProgress(10)
+
     const [upload, mess] = await upload_file(FILE, session.user.email);
-    if(upload==true){
+    setUploadProgress(100)
+    if (upload == true) {
       toast({
         title: "Success!",
         description: "The file is uploaded to the cloud."
@@ -131,8 +136,7 @@ function DashboardContent() {
         }
       }));
       setFiles(mappedFiles || []);
-    }
-    else if(upload==false){
+    } else if (upload == false) {
       toast({
         title: "Error",
         description: mess.toString(),
@@ -140,6 +144,7 @@ function DashboardContent() {
       });
     }
     btn!.style.cursor = 'pointer';
+    setUploadProgress(0);
   };
 
   const triggerFileInput = () => {
@@ -296,6 +301,9 @@ function DashboardContent() {
               </Button>
             </div>
           </div>
+          {uploadProgress > 0 && (
+            <Progress value={uploadProgress} className="mb-4" />
+          )}
           <Table>
             <TableHeader>
               <TableRow>
@@ -341,6 +349,7 @@ function DashboardContent() {
                   </TableCell>
                 </TableRow>
               ))}
+              
             </TableBody>
           </Table>
         </CardContent>
