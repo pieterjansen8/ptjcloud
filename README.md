@@ -1,4 +1,4 @@
-#ptjcloud
+# ptjcloud
 
 ## How does it work?
 the ptjcloud backend is fully build on supabase!
@@ -32,4 +32,4 @@ npm run dev
 
 pnpm run dev
 ```
-### or better go to https://ptjcloud.vercel.app for the latest version
+### or better go to https://ptjcloud.vercel.app or install the executable (download from the website) for the latest version
