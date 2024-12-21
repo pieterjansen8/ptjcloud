@@ -102,6 +102,14 @@ function DashboardContent() {
 
     fetchData();
 
+    var is_safari = /^(?!.*chrome).*safari/i.test(navigator.userAgent);
+    if (is_safari) {
+      toast({
+        title: "Warning",
+        description: "The application is not fully supported on Safari. Consider using Chrome or Firefox.",
+        variant: "destructive"
+      });
+    }
     window.history.replaceState(null, '', "/dash");
   }, [refresh_token, router, toast]);
 
