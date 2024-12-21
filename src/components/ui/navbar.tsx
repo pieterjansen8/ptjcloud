@@ -81,6 +81,13 @@ export function Navbar({ userEmail }: NavbarProps) {
             GitHub
           </Link>
         </Button>
+        <Button className="group inline-flex h-9 w-max items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:bg-blue-700 focus:outline-none disabled:pointer-events-none disabled:opacity-50"
+          asChild>
+          <Link  className="h-5 w-5 mr-2" href="https://github.com/pieterjansen8/ptj-cloud-executable/releases/download/release/ptj-cloud-installer.msi"
+           >download app
+          </Link>
+        </Button >
+
       </nav>
       {userEmail && (
         <div className="ml-4 text-sm text-gray-600 hidden lg:block">

@@ -4,6 +4,7 @@ import { ArrowRight, Cloud, Lock, Zap } from 'lucide-react'
 import {useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { validate_refresh_key } from '@/api/refresh_key_validator'
+import Link from 'next/link'
 export default function LandingPage() {
   const router = useRouter()  
     useEffect(() => { 
@@ -49,6 +50,9 @@ export default function LandingPage() {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button variant="outline" onClick={() => {window.open("https://github.com/pieterjansen8/ptjcloud")}}>Learn More</Button>
+              </div>
+              <div>
+                <Link className="text-blue-600 underline" href={"https://github.com/pieterjansen8/ptj-cloud-executable/releases/download/release/ptj-cloud-installer.msi"}>or download the executable</Link>
               </div>
             </div>
           </div>
