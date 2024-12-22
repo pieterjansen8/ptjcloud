@@ -8,18 +8,29 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast"
 import { Navbar } from '@/components/ui/navbar';
-import { Download, Link, Trash, FileIcon, MoreVertical, Search, Upload } from 'lucide-react';
+import { Download, Link, Trash, FileIcon, MoreVertical, Search, Upload, Share } from 'lucide-react';
 import { getdata } from '@/api/get_session';
 import { upload_file } from "@/api/upload_file";
 import { get_files } from "@/api/get_all_files";
 import { download, remove, copy_link } from "@/api/download"
 import { Progress } from '@/components/ui/progress';
+import { share_file } from '@/api/download';
 interface Session {
   user?: {
     email?: string;
@@ -55,7 +66,7 @@ function DashboardContent() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<FileData[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
-
+  const [Shareemail, setSharefileemail] = useState('');
   useEffect(() => {
     async function fetchData() {
       if (!refresh_token && !localStorage.getItem("refresh_token")) {
@@ -268,6 +279,22 @@ function DashboardContent() {
     });
    }
   }
+  const handleFileShare  =  async (fileid:string) => {
+    const [ok, error] = await  share_file(session?.user?.email!, fileid, Shareemail);
+    if(ok==false){
+      toast({
+        title: "Error",
+        description: error.toString(),
+        variant: "destructive"
+      });
+    }
+    else{
+      toast({
+        title: "Success",
+        description: "File shared with " + Shareemail,
+      });
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900">
@@ -351,6 +378,41 @@ function DashboardContent() {
                         <DropdownMenuItem onClick={() => copyHandler(file.name, session?.user?.email!)} className="hover:bg-gray-100 focus:bg-gray-100 cursor-pointer">
                           <Link className="mr-2 h-4 w-4" />
                           <span>Copy link</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <div className="hover:bg-gray-100 focus:bg-gray-100 cursor-pointer flex items-center px-2 py-1">
+                                <Share className="mr-2 h-4 w-4" />
+                                <span className="text-sm">Share file</span>
+                              </div>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Share file</DialogTitle>
+                                <DialogDescription>
+                                  Share the file with another user.
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div>
+                                <label>Email of user:</label>
+                                <Input
+                                  type="text"
+                                  placeholder="Email"
+                                  className="w-full"
+                                  onChange={(e) => { setSharefileemail(e.target.value)} }
+                                />
+                              </div>
+                              <DialogFooter>
+                              <DialogClose asChild>
+                                <Button type="button" variant="secondary">
+                                  Close
+                                </Button>
+                              </DialogClose>
+                                <Button className='bg-blue-600 hover:bg-blue-700' type="submit" onClick={ () => {handleFileShare(file.name)}}>share file</Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
