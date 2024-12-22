@@ -35,7 +35,7 @@ export async function copy_link(file_name:string, email:string) {
 }
 export async function  share_file(email:string,file_name:string, sharedmail:string){
     const filePath = `${email}/${file_name}`;
-    const share_path = `${sharedmail}/${file_name}`;
+    const share_path = `${sharedmail}/${file_name+"-shared"}`;
     const { data, error } = await supabase
       .storage
        .from('files')
