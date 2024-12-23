@@ -31,6 +31,7 @@ import { get_files } from "@/api/get_all_files";
 import { download, remove, copy_link } from "@/api/download"
 import { Progress } from '@/components/ui/progress';
 import { share_file } from '@/api/download';
+import { Spinner } from "@/components/ui/spinner"; // Import Spinner component
 interface Session {
   user?: {
     email?: string;
@@ -67,6 +68,7 @@ function DashboardContent() {
   const [files, setFiles] = useState<FileData[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [Shareemail, setSharefileemail] = useState('');
+  const [loading, setLoading] = useState(true); // Add loading state
   useEffect(() => {
     async function fetchData() {
       if (!refresh_token && !localStorage.getItem("refresh_token")) {
@@ -109,6 +111,7 @@ function DashboardContent() {
         }
       }));
       setFiles(mappedFiles || []);
+      setLoading(false); // Set loading to false after data is fetched
     }
 
     fetchData();
@@ -339,6 +342,7 @@ function DashboardContent() {
           {uploadProgress > 0 && (
             <Progress value={uploadProgress} className="mb-4" />
           )}
+
           <Table>
             <TableHeader>
               <TableRow>
@@ -349,7 +353,15 @@ function DashboardContent() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredFiles.map((file) => (
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center">
+                    <Spinner /> {/* Display spinner while loading */}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredFiles.map((file) => (
+              
                 <TableRow key={file.id}>
                   <TableCell className="font-medium text-gray-900">
                     <div className="flex items-center">
@@ -418,8 +430,8 @@ function DashboardContent() {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))}
-              
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>
