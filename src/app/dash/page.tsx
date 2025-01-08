@@ -73,13 +73,8 @@ function DashboardContent() {
   useEffect(() => {
     async function fetchData() {
       if (!refresh_token && !localStorage.getItem("refresh_token")) {
-        router.push("/");
-        return;
-      }
-      const token = refresh_token || localStorage.getItem("refresh_token")!;
-      if (refresh_token) localStorage.setItem("refresh_token", refresh_token);
-      if(Oauth){
-        const [error, sessionData] = await getOauthdata();
+        const [error, sessionData] = await getOauthdata()
+        console.log(sessionData)
         if (error) {
           if (error.toString() === "Error: Invalid Refresh Token: Already Used") {
             localStorage.removeItem("refresh_token");
@@ -92,7 +87,9 @@ function DashboardContent() {
           router.push("/");
           return;
         }
-    
+        if (sessionData && 'session' in sessionData && sessionData.session) {
+          localStorage.setItem("refresh_token", sessionData.session.refresh_token);
+        }
         if (sessionData && 'user' in sessionData) {
           setSession({
             user: sessionData.user ? { email: sessionData.user.email } : undefined
@@ -112,9 +109,12 @@ function DashboardContent() {
           }
         }));
         setFiles(mappedFiles || []);
-        setLoading(false); 
-        return
+        setLoading(false); // Set loading to false after data is fetched
+        return;
       }
+      const token = refresh_token || localStorage.getItem("refresh_token")!;
+      if (refresh_token) localStorage.setItem("refresh_token", refresh_token);
+      console.log(refresh_token)
       const [error, sessionData] = await getdata(token)
       if (error) {
         if (error.toString() === "Error: Invalid Refresh Token: Already Used") {
@@ -146,6 +146,7 @@ function DashboardContent() {
           lastModified: file.metadata.lastModified,
         }
       }));
+
       setFiles(mappedFiles || []);
       setLoading(false); // Set loading to false after data is fetched
     }

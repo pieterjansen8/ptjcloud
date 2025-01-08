@@ -1,7 +1,7 @@
 "use client"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Cloud, Lock, Zap } from 'lucide-react'
-import {useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { validate_refresh_key } from '@/api/refresh_key_validator'
 import Link from 'next/link'
