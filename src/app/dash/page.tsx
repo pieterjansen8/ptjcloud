@@ -25,7 +25,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/hooks/use-toast"
 import { Navbar } from '@/components/ui/navbar';
 import { Download, Link, Trash, FileIcon, MoreVertical, Search, Upload, Share } from 'lucide-react';
-import { getdata } from '@/api/get_session';
+import { getdata, getOauthdata } from '@/api/get_session';
 import { upload_file } from "@/api/upload_file";
 import { get_files } from "@/api/get_all_files";
 import { download, remove, copy_link } from "@/api/download"
@@ -60,6 +60,7 @@ export default function Dashboard() {
 function DashboardContent() {
   const searchParams = useSearchParams();
   const refresh_token = searchParams.get("token");
+  const Oauth = searchParams.get("Oauth")
   const router = useRouter();
   const { toast } = useToast()
   const [searchTerm, setSearchTerm] = useState('');
@@ -75,11 +76,46 @@ function DashboardContent() {
         router.push("/");
         return;
       }
-
       const token = refresh_token || localStorage.getItem("refresh_token")!;
       if (refresh_token) localStorage.setItem("refresh_token", refresh_token);
-
-      const [error, sessionData] = await getdata(token);
+      if(Oauth){
+        const [error, sessionData] = await getOauthdata();
+        if (error) {
+          if (error.toString() === "Error: Invalid Refresh Token: Already Used") {
+            localStorage.removeItem("refresh_token");
+          }
+          toast({
+            title: "Error",
+            description: error.toString(),
+            variant: "destructive"
+          });
+          router.push("/");
+          return;
+        }
+    
+        if (sessionData && 'user' in sessionData) {
+          setSession({
+            user: sessionData.user ? { email: sessionData.user.email } : undefined
+          });
+        } else {
+          setSession({ user: { email: "IMPOSTER" } });
+        }
+        const fileData = await get_files((sessionData as Session)?.user?.email!);
+        const mappedFiles = fileData!.map((file: any) => ({
+          id: file.id,
+          name: file.name,
+          size: file.metadata.size,
+          lastModified: file.metadata.lastModified,
+          metadata: {
+            size: file.metadata.size,
+            lastModified: file.metadata.lastModified,
+          }
+        }));
+        setFiles(mappedFiles || []);
+        setLoading(false); 
+        return
+      }
+      const [error, sessionData] = await getdata(token)
       if (error) {
         if (error.toString() === "Error: Invalid Refresh Token: Already Used") {
           localStorage.removeItem("refresh_token");

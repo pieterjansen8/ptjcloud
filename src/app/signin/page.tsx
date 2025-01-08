@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { login } from "@/api/sing-in"
+import { login, LoginWithOauth } from "@/api/sing-in"
 import { Switch } from '@/components/ui/switch'
 import { useRouter } from 'next/navigation'
 import { validate_refresh_key } from '@/api/refresh_key_validator'
+import { Chrome as Google } from 'lucide-react'
 
 export default function AuthPage() {
   const [email, setEmail] = useState('')
@@ -51,6 +52,10 @@ export default function AuthPage() {
       setMessage(login_request!.toString())
     }
     setIsLoading(false)
+  }
+
+  const handleGoogleLogin = () => {
+    LoginWithOauth()
   }
 
   return (
@@ -104,6 +109,16 @@ export default function AuthPage() {
               {isLoading ? 'Processing...' : 'Sign In'}
             </Button>
           </form>
+          <div className="mt-4">
+            <Button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="w-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+            >
+              <Google className="w-5 h-5 mr-2" />
+              Login with Google
+            </Button>
+          </div>
         </CardContent>
         <CardFooter>
           {message && (

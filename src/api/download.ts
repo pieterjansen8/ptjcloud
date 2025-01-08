@@ -1,4 +1,6 @@
-import { supabase } from "@/lib/supabase-client";
+import { createClient } from "@/utils/supabase/client";
+
+const supabase = createClient()
 
 export async function download(file_name:string, email:string){
     const filePath = `${email}/${file_name}`;

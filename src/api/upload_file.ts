@@ -1,5 +1,6 @@
-import { supabase } from "@/lib/supabase-client";
+import { createClient } from "@/utils/supabase/client";
 export async function  upload_file(file:File, email:string) {
+    const supabase = createClient()
     if(file.size>50000000){
         return [false, "File size is too large. Maximum file size is 50MB, consider compressing the file."]
     }
