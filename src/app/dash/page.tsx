@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast"
 import { Navbar } from '@/components/ui/navbar';
-import { Download, Link, Trash, FileIcon, MoreVertical, Search, Upload, Share } from 'lucide-react';
+import { Download, Link, Trash, FileIcon, MoreVertical, Search, Upload, Share, Sun, Moon } from 'lucide-react';
 import { getdata, getOauthdata } from '@/api/get_session';
 import { upload_file } from "@/api/upload_file";
 import { get_files } from "@/api/get_all_files";
@@ -70,7 +70,15 @@ function DashboardContent() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [Shareemail, setSharefileemail] = useState('');
   const [loading, setLoading] = useState(true); // Add loading state
+  const [theme, setThemelocal] =  useState("")
+  const setTheme = (theme:string) => {
+      localStorage.setItem("theme",theme)
+      setThemelocal(theme)
+  }
   useEffect(() => {
+    const th = localStorage.getItem("theme")
+    if(th!=null){ setThemelocal(th) }
+    else{setThemelocal("light")}
     async function fetchData() {
       if (!refresh_token && !localStorage.getItem("refresh_token")) {
         const [error, sessionData] = await getOauthdata()
@@ -84,7 +92,6 @@ function DashboardContent() {
             description: error.toString(),
             variant: "destructive"
           });
-          router.push("/");
           return;
         }
         if (sessionData && 'session' in sessionData && sessionData.session) {
@@ -125,7 +132,6 @@ function DashboardContent() {
           description: error.toString(),
           variant: "destructive"
         });
-        router.push("/");
         return;
       }
       if (sessionData && 'user' in sessionData) {
@@ -335,16 +341,23 @@ function DashboardContent() {
       });
     }
   }
-
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900">
-      <Navbar userEmail={session?.user?.email} />
-      <Card className="mt-5 bg-white border-gray-200 shadow-md">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
+      <Navbar userEmail={session?.user?.email} theme={theme} />
+      <div className="flex justify-end p-4">
+        <Button
+          variant="ghost"
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        >
+          {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        </Button>
+      </div>
+      <Card className={`mt-5 ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-md`}>
         <CardHeader>
-          <CardTitle className="text-gray-800">
+          <CardTitle className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'}`}>
             {session?.user?.email ?? 'Loading page...'} Files
           </CardTitle>
-          <CardDescription className="text-gray-600">
+          <CardDescription className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
             Manage and view your cloud files
           </CardDescription>
         </CardHeader>
@@ -356,9 +369,9 @@ function DashboardContent() {
                 placeholder="Search files..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-white border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500"
+                className={`pl-10 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'} focus:ring-blue-500 focus:border-blue-500`}
               />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'} h-4 w-4`} />
             </div>
             <div>
               <input
@@ -383,10 +396,10 @@ function DashboardContent() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-gray-700">Name</TableHead>
-                <TableHead className="hidden sm:table-cell text-gray-700">Size (in bytes)</TableHead>
-                <TableHead className="hidden sm:table-cell text-gray-700">Last Modified</TableHead>
-                <TableHead className="text-gray-700 text-right">Actions</TableHead>
+                <TableHead className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'}`}>Name</TableHead>
+                <TableHead className={`hidden sm:table-cell ${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'}`}>Size (in bytes)</TableHead>
+                <TableHead className={`hidden sm:table-cell ${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'}`}>Last Modified</TableHead>
+                <TableHead className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'} text-right`}>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -398,24 +411,23 @@ function DashboardContent() {
                 </TableRow>
               ) : (
                 filteredFiles.map((file) => (
-              
                 <TableRow key={file.id}>
-                  <TableCell className="font-medium text-gray-900">
+                  <TableCell className={`font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>
                     <div className="flex items-center">
-                      <FileIcon className="h-5 w-5 text-gray-400 mr-2" />
+                      <FileIcon className={`h-5 w-5 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'} mr-2`} />
                       {file.name}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell text-gray-700">{file.metadata.size}</TableCell>
-                  <TableCell className="hidden sm:table-cell text-gray-700">{file.metadata.lastModified}</TableCell>
+                  <TableCell className={`hidden sm:table-cell ${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'}`}>{file.metadata.size}</TableCell>
+                  <TableCell className={`hidden sm:table-cell ${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'}`}>{file.metadata.lastModified}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
-                          <MoreVertical className="h-4 w-4 text-gray-600" />
+                          <MoreVertical className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-white text-gray-900 border-gray-200">
+                      <DropdownMenuContent align="end" className={`bg-white ${theme === 'dark' ? 'bg-gray-800 text-gray-100 border-gray-700' : 'bg-white text-gray-900 border-gray-200'}`}>
                         <DropdownMenuItem onClick={() => downloadHandler(file.name, session?.user?.email!)} className="hover:bg-gray-100 focus:bg-gray-100 cursor-pointer">
                           <Download className="mr-2 h-4 w-4" />
                           <span>Download</span>

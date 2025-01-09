@@ -10,10 +10,11 @@ import { signOut } from '@/api/singout'; // Assuming you have a signOut function
 interface NavbarProps {
   userEmail?: string;
 }
-
-export function Navbar({ userEmail }: NavbarProps) {
+interface ThemeProps{
+  theme?:string;
+}
+export function Navbar({ userEmail, theme }: NavbarProps & ThemeProps)  {
   const router = useRouter()
-
   async function handleLogout() {
     try {
       await signOut(); 
@@ -25,22 +26,22 @@ export function Navbar({ userEmail }: NavbarProps) {
   }
 
   return (
-    <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6 bg-white text-gray-800 shadow-md">
+    <header className={`flex h-20 w-full shrink-0 items-center px-4 md:px-6 ${theme === 'dark' ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800'} shadow-md`}>
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="lg:hidden">
-            <MenuIcon className="h-6 w-6 text-gray-800" />
+          <Button variant="outline" size="icon" className={`lg:hidden ${theme === 'dark' ? 'text-gray-100 bg-gray-800' : 'text-gray-800'}`}>
+            <MenuIcon className={`h-6 w-6 ${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'}`} />
             <span className="sr-only">Toggle navigation menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="bg-white text-gray-800">
+        <SheetContent side="left" className={`${theme === 'dark' ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-800'}`}>
           <Link href="#" className="mr-6 flex items-center" prefetch={false}>
-            <CloudIcon className="h-6 w-6 text-blue-600" />
+            <CloudIcon className={`h-6 w-6 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
             <span className="ml-2 text-lg font-semibold">Ptj Inc</span>
           </Link>
           <nav className="grid gap-2 py-6">
             <Button
-              className="flex items-center justify-start py-2 text-lg font-semibold text-gray-800 hover:bg-gray-100"
+              className={`flex items-center justify-start py-2 text-lg font-semibold ${theme === 'dark' ? 'text-gray-100 hover:bg-gray-700' : 'text-gray-800 hover:bg-gray-100'}`}
               variant="ghost"
               onClick={handleLogout}
             >
@@ -48,7 +49,7 @@ export function Navbar({ userEmail }: NavbarProps) {
               Logout
             </Button>
             <Button
-              className="flex items-center justify-start py-2 text-lg font-semibold text-gray-800 hover:bg-gray-100"
+              className={`flex items-center justify-start py-2 text-lg font-semibold ${theme === 'dark' ? 'text-gray-100 hover:bg-gray-700' : 'text-gray-800 hover:bg-gray-100'}`}
               variant="ghost"
               asChild
             >
@@ -61,8 +62,8 @@ export function Navbar({ userEmail }: NavbarProps) {
         </SheetContent>
       </Sheet>
       <Link href="#" className="mr-6 hidden lg:flex items-center" prefetch={false}>
-        <CloudIcon className="h-6 w-6 text-blue-600" />
-        <span className="ml-2 text-lg font-semibold text-gray-800">Ptj Inc</span>
+        <CloudIcon className={`h-6 w-6 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
+        <span className={`ml-2 text-lg font-semibold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'}`}>Ptj Inc</span>
       </Link>
       <nav className="ml-auto hidden lg:flex items-center gap-6">
         <Button
@@ -87,10 +88,9 @@ export function Navbar({ userEmail }: NavbarProps) {
            >download app
           </Link>
         </Button >
-
       </nav>
       {userEmail && (
-        <div className="ml-4 text-sm text-gray-600 hidden lg:block">
+        <div className={`ml-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} hidden lg:block`}>
           Logged in as: {userEmail}
         </div>
       )}
