@@ -82,7 +82,7 @@ function DashboardContent() {
     async function fetchData() {
       if (!refresh_token && !localStorage.getItem("refresh_token")) {
         const [error, sessionData] = await getOauthdata()
-        console.log(sessionData)
+        
         if (error) {
           if (error.toString() === "Error: Invalid Refresh Token: Already Used") {
             localStorage.removeItem("refresh_token");
@@ -92,6 +92,7 @@ function DashboardContent() {
             description: error.toString(),
             variant: "destructive"
           });
+          router.push("/");
           return;
         }
         if (sessionData && 'session' in sessionData && sessionData.session) {
@@ -132,6 +133,7 @@ function DashboardContent() {
           description: error.toString(),
           variant: "destructive"
         });
+        router.push("/");
         return;
       }
       if (sessionData && 'user' in sessionData) {
