@@ -32,6 +32,8 @@ import { download, remove, copy_link } from "@/api/download"
 import { Progress } from '@/components/ui/progress';
 import { share_file } from '@/api/download';
 import { Spinner } from "@/components/ui/spinner"; // Import Spinner component
+import { AuroraBackground } from '@/components/ui/aurora-background';
+import { motion } from "motion/react"
 interface Session {
   user?: {
     email?: string;
@@ -78,7 +80,7 @@ function DashboardContent() {
   useEffect(() => {
     const th = localStorage.getItem("theme")
     if(th!=null){ setThemelocal(th) }
-    else{setThemelocal("light")}
+    else{setThemelocal("dark")}
     async function fetchData() {
       if (!refresh_token && !localStorage.getItem("refresh_token")) {
         const [error, sessionData] = await getOauthdata()
@@ -344,7 +346,18 @@ function DashboardContent() {
     }
   }
   return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
+    <AuroraBackground>
+       <motion.div
+          initial={{ opacity: 0.0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.3,
+            duration: 0.8,
+            ease: "easeInOut",
+          }}
+          className="relative flex flex-col gap-4 w-screen items-center justify-center px-4"
+      >
+    <div className={`min-h-screen w-screen ${theme === 'dark' ? 'bg-transparent text-gray-100' : 'bg-transparent text-gray-900'}`}>
       <Navbar userEmail={session?.user?.email} theme={theme} />
       <div className="flex justify-end p-4">
         <Button
@@ -354,12 +367,12 @@ function DashboardContent() {
           {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
       </div>
-      <Card className={`mt-5 ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-md`}>
+      <Card className={`mt-5 ${theme === 'dark' ? 'bg-black/20 border-black/40' : ' bg-white/10 border-gray-200'} shadow-md`}>
         <CardHeader>
-          <CardTitle className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-800'}`}>
+          <CardTitle className={`${theme === 'dark' ? 'text-gray-100' : 'text-gray-100'}`}>
             {session?.user?.email ?? 'Loading page...'} Files
           </CardTitle>
-          <CardDescription className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+          <CardDescription className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>
             Manage and view your cloud files
           </CardDescription>
         </CardHeader>
@@ -371,7 +384,7 @@ function DashboardContent() {
                 placeholder="Search files..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className={`pl-10 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-white border-gray-300 text-gray-900'} focus:ring-blue-500 focus:border-blue-500`}
+                className={`pl-10 ${theme === 'dark' ? 'bg-black/20 border-black/30 text-gray-100' : 'bg-white/20 border-gray-300/30 text-white'} focus:ring-black/30 focus:border-black/40`}
               />
               <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'} h-4 w-4`} />
             </div>
@@ -383,7 +396,7 @@ function DashboardContent() {
                 className="hidden"
               />
               <Button id='upload_btn'
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-black/40 hover:bg-black/70 text-white"
                 onClick={triggerFileInput}
               >
                 <Upload className="h-4 w-4 mr-2" />
@@ -398,10 +411,10 @@ function DashboardContent() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'}`}>Name</TableHead>
-                <TableHead className={`hidden sm:table-cell ${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'}`}>Size (in bytes)</TableHead>
-                <TableHead className={`hidden sm:table-cell ${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'}`}>Last Modified</TableHead>
-                <TableHead className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'} text-right`}>Actions</TableHead>
+                <TableHead className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>Name</TableHead>
+                <TableHead className={`hidden sm:table-cell ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>Size (in bytes)</TableHead>
+                <TableHead className={`hidden sm:table-cell ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`}>Last Modified</TableHead>
+                <TableHead className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'} text-right`}>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -414,14 +427,14 @@ function DashboardContent() {
               ) : (
                 filteredFiles.map((file) => (
                 <TableRow key={file.id}>
-                  <TableCell className={`font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>
+                  <TableCell className={`font-medium ${theme === 'dark' ? 'text-gray-100' : 'text-gray-100'}`}>
                     <div className="flex items-center">
                       <FileIcon className={`h-5 w-5 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'} mr-2`} />
                       {file.name}
                     </div>
                   </TableCell>
-                  <TableCell className={`hidden sm:table-cell ${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'}`}>{file.metadata.size}</TableCell>
-                  <TableCell className={`hidden sm:table-cell ${theme === 'dark' ? 'text-gray-400' : 'text-gray-700'}`}>{file.metadata.lastModified}</TableCell>
+                  <TableCell className={`hidden sm:table-cell ${theme === 'dark' ? 'text-gray-400' : 'text-gray-100'}`}>{file.metadata.size}</TableCell>
+                  <TableCell className={`hidden sm:table-cell ${theme === 'dark' ? 'text-gray-400' : 'text-gray-100'}`}>{file.metadata.lastModified}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -429,23 +442,23 @@ function DashboardContent() {
                           <MoreVertical className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className={`bg-white ${theme === 'dark' ? 'bg-gray-800 text-gray-100 border-gray-700' : 'bg-white text-gray-900 border-gray-200'}`}>
-                        <DropdownMenuItem onClick={() => downloadHandler(file.name, session?.user?.email!)} className="hover:bg-gray-100 focus:bg-gray-100 cursor-pointer">
+                      <DropdownMenuContent align="end" className={`bg-white ${theme === 'dark' ? 'bg-black/30 text-gray-100 border-black/40' : 'bg-white/30 border-gray-200/40'}`}>
+                        <DropdownMenuItem onClick={() => downloadHandler(file.name, session?.user?.email!)} className="hover:black/40 focus:bg-black/40cursor-pointer">
                           <Download className="mr-2 h-4 w-4" />
                           <span>Download</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => removeHandler(file.name, session?.user?.email!)} className="hover:bg-gray-100 focus:bg-gray-100 cursor-pointer">
+                        <DropdownMenuItem onClick={() => removeHandler(file.name, session?.user?.email!)} className="hover:black/40 focus:bg-black/40 cursor-pointer">
                           <Trash className="mr-2 h-4 w-4" />
                           <span>Remove</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => copyHandler(file.name, session?.user?.email!)} className="hover:bg-gray-100 focus:bg-gray-100 cursor-pointer">
+                        <DropdownMenuItem onClick={() => copyHandler(file.name, session?.user?.email!)} className="hover:black/40 focus:bg-black/40 cursor-pointer">
                           <Link className="mr-2 h-4 w-4" />
                           <span>Copy link</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Dialog>
                             <DialogTrigger asChild>
-                              <div className="hover:bg-gray-100 focus:bg-gray-100 cursor-pointer flex items-center px-2 py-1">
+                              <div className="hover:black/40 focus:bg-black/40 cursor-pointer flex items-center px-2 py-1">
                                 <Share className="mr-2 h-4 w-4" />
                                 <span className="text-sm">Share file</span>
                               </div>
@@ -488,5 +501,7 @@ function DashboardContent() {
         </CardContent>
       </Card>
     </div>
+    </motion.div>
+   </AuroraBackground>
   );
 }
