@@ -8,21 +8,6 @@ import { motion } from "motion/react";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 export default function LandingPage() {
   const router = useRouter()  
-    useEffect(() => { 
-      const setup = async () => { 
-        if(localStorage.getItem("refresh_token") !== undefined){
-          const val = await validate_refresh_key(localStorage.getItem("refresh_token")!)
-          if(val == true){
-            router.push("../dash")
-            return
-          }
-          else{
-            return
-          }
-        }
-      }
-      setup()
-    }, [router])
 
     return (
       <AuroraBackground>
