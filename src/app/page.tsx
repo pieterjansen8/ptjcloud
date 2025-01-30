@@ -31,6 +31,18 @@ export default function LandingPage() {
             start uploading
           </button>
         </motion.div>
+        <motion.div
+          initial={{ opacity: 0.0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.3,
+            duration: 0.8,
+            ease: "easeInOut",
+          }}
+          className="absolute bottom-4 right-4"
+        >
+           <a href="https://www.producthunt.com/posts/ptjcloud?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-ptjcloud" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=836210&theme=dark&t=1738271992436" alt="ptjcloud - Cloud | Product Hunt" style={{ width: '250px', height: '54px' }} width="250" height="54" /></a>
+        </motion.div>
       </AuroraBackground>
     );
 }
