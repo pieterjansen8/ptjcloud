@@ -5,12 +5,6 @@ import { Card } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { stackServerApp } from "@/stack"
 
-type FileData = {
-  key: string
-  url: string
-  name: string
-  user_id: string
-}
 
 export default async function Page() {
   const user = await stackServerApp.getUser({ or: 'redirect' });
