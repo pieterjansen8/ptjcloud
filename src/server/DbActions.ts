@@ -16,6 +16,7 @@ export const Get_user_files = async (user:any) => {
     }
     const files = await db.select().from(FilesTable).where(eq(FilesTable.user_id, user.id))
     return ["success", files]
+    
 }
 
 const db = drizzle({ connection: {
