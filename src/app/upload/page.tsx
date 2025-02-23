@@ -2,12 +2,12 @@
 import { useUser } from "@stackframe/stack"
 import { UploadButton } from "@/utils/uploadthing"
 import { Cloud, Loader2 } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 export default function Home() {
   const [isUploading, setIsUploading] = useState(false)
-  const user = useUser({ or: 'redirect' });
+  useUser({ or: 'redirect' });
   return (
     <main className="container mx-auto flex min-h-screen flex-col items-center justify-center p-4">
       <Card className="w-full max-w-2xl">
@@ -37,7 +37,7 @@ export default function Home() {
               onUploadBegin={() => {
                 setIsUploading(true)
               }}
-              onClientUploadComplete={(res) => {
+              onClientUploadComplete={() => {
                 setIsUploading(false)
                 toast.success("Upload Completed", {richColors:true})
               }}

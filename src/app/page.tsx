@@ -4,7 +4,6 @@ import Link from "next/link"
 import { Card } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { stackServerApp } from "@/stack"
-import { redirect } from 'next/navigation'
 
 export default async function Page() {
   const user = await stackServerApp.getUser({ or: 'redirect' });

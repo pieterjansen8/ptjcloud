@@ -4,7 +4,7 @@ import { stackServerApp } from "@/stack";
 import { upload_file } from "@/server/DbActions";
 const f = createUploadthing();
 
-const auth = async (req: Request) => await stackServerApp.getUser()
+const auth = async () => await stackServerApp.getUser()
 
 export const ourFileRouter = {
   imageUploader: f({
