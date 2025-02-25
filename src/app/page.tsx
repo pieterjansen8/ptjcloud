@@ -1,64 +1,38 @@
-import { Get_user_files } from "@/server/DbActions"
-import { FileIcon, Loader2 } from "lucide-react"
-import Link from "next/link"
+import Comp from "@/components/Filest"
+import { Suspense } from "react"
 import { Card } from "@/components/ui/card"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { stackServerApp } from "@/stack"
+import { Skeleton } from "@/components/ui/skeleton"
+
+export function FileListSkeleton() {
+  return (
+    <div className="container mx-auto p-4 space-y-6">
+      <Skeleton className="h-9 w-[180px]" /> {/* Title skeleton */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <Card key={index} className="p-4">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-10 w-10 rounded-lg" /> {/* File icon skeleton */}
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-3/4" /> {/* Filename skeleton */}
+                <Skeleton className="h-3 w-1/2" /> {/* User ID skeleton */}
+              </div>
+              <Skeleton className="h-4 w-12" /> {/* "View" text skeleton */}
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 
 export default async function Page() {
-  const user = await stackServerApp.getUser({ or: 'redirect' });
-  const all_files = await Get_user_files(user)
-  if (!all_files) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    )
-  }
-
-  if (all_files[0] == "error") {
-    return (
-      <div className="container mx-auto p-4">
-        <Alert variant="destructive">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>There was a problem loading your files. Please try again later.</AlertDescription>
-        </Alert>
-      </div>
-    )
-  }
-  if(!stackServerApp.getUser()){
-    window.location.replace("/handler/signin")
-  }
-
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">Your Files</h1>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {Array.isArray(all_files[1]) && all_files[1].map((file: { key: string | null; url: string | null; name: string | null; user_id: string | null }) => (
-          file.key && file.url && file.name && file.user_id ? (
-            <Card key={file.key} className="group relative overflow-hidden transition-colors hover:bg-accent">
-              <Link href={file.url} className="flex items-center gap-3 p-4">
-                <div className="rounded-lg bg-primary/10 p-2">
-                  <FileIcon className="h-6 w-6 text-primary" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium leading-6">{file.name}</p>
-                  <p className="truncate text-sm text-muted-foreground">User ID: {file.user_id}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">View</span>
-                </div>
-              </Link>
-            </Card>
-          ) : null
-        ))}
-      </div>
-      {all_files[1].length === 0 && (
-        <div className="flex h-[200px] items-center justify-center rounded-lg border border-dashed">
-          <p className="text-sm text-muted-foreground">No files found</p>
-        </div>
-      )}
+       <h1 className="text-3xl font-bold tracking-tight">Your Files</h1>
+       <Suspense fallback={<FileListSkeleton/>}>
+         <Comp></Comp>
+       </Suspense>
     </div>
   )
 }
